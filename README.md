@@ -1,5 +1,7 @@
 # EODHD MCP Server
 
+*Language: English | [日本語](README_JA.md)*
+
 A Model Context Protocol (MCP) server that provides access to EODHD financial APIs. This server enables Claude Code and other MCP clients to fetch stock prices, earnings data, fundamental information, and index components through a unified interface.
 
 ## Features

@@ -89,7 +89,12 @@ EODHD_API_KEY=your_actual_api_key_here
 
 3. **Test the installation:**
 ```bash
-eodhd-mcp-server --help
+# Test if the server starts correctly (press Ctrl+C to stop)
+eodhd-mcp-server
+
+# You should see output similar to:
+# 2024-06-28 16:04:42,657 - eodhd_mcp_server.server - INFO - Starting EODHD MCP Server...
+# 2024-06-28 16:04:42,657 - eodhd_mcp_server.server - INFO - Configuration loaded - API key configured: True
 ```
 
 ## Usage
@@ -102,41 +107,75 @@ The server runs as a stdio-based MCP server:
 eodhd-mcp-server
 ```
 
-### Integration with Claude Code
+### Integration with Cursor
 
-Add the server to your Claude Code MCP configuration:
+Add the server to your Cursor MCP configuration (`~/.cursor/mcp.json`):
 
 ```json
 {
   "mcpServers": {
     "eodhd": {
-      "command": "eodhd-mcp-server",
-      "args": []
+      "command": "/path/to/your/project/venv/bin/eodhd-mcp-server",
+      "args": [],
+      "cwd": "/path/to/your/project/eodhd-mcp-server",
+      "env": {
+        "EODHD_API_KEY": "your_api_key_here",
+        "EODHD_BASE_URL": "https://eodhd.com/api",
+        "REQUEST_TIMEOUT": "30",
+        "MAX_RETRIES": "3",
+        "RATE_LIMIT_DELAY": "0.1",
+        "DEBUG": "false"
+      }
     }
   }
 }
 ```
 
-### Example Usage
+**Important Configuration Notes:**
+- Replace `/path/to/your/project/` with your actual project path
+- Use the absolute path to the `eodhd-mcp-server` executable in your virtual environment
+- Set the `cwd` (current working directory) to your project root
+- Include all necessary environment variables in the `env` section
+- Replace `your_api_key_here` with your actual EODHD API key
 
-Once connected to an MCP client, you can use the tools:
+**Alternative: Using .env file**
+If you prefer to use a `.env` file (recommended for security), you can simplify the configuration:
 
-```python
-# Get Apple stock price for the last 30 days
-result = call_tool("get_stock_price", {"symbol": "AAPL"})
-
-# Get earnings calendar for next week
-result = call_tool("get_earnings_calendar", {
-    "from_date": "2024-01-15",
-    "to_date": "2024-01-22"
-})
-
-# Get Microsoft fundamentals
-result = call_tool("get_fundamentals", {"symbol": "MSFT"})
-
-# Get S&P 500 components
-result = call_tool("get_index_components", {"index_code": "GSPC.INDX"})
+```json
+{
+  "mcpServers": {
+    "eodhd": {
+      "command": "/path/to/your/project/venv/bin/eodhd-mcp-server",
+      "args": [],
+      "cwd": "/path/to/your/project/eodhd-mcp-server"
+    }
+  }
+}
 ```
+
+Make sure your `.env` file contains all required environment variables.
+
+### Example Usage in Cursor
+
+Once the MCP server is configured and running (green icon), you can use the tools in Cursor:
+
+**Stock Price Data:**
+- "Get AAPL stock price for the last 30 days"
+- "Show me Tesla's stock performance this year"
+
+**Earnings Information:**
+- "Show me earnings announcements for this week"
+- "Get AAPL's past 10 earnings results"
+
+**Fundamental Analysis:**
+- "Get Microsoft's fundamental data"
+- "Show me growth rates for NVDA"
+
+**Index Components:**
+- "What are the components of the S&P 500?"
+- "Show me the Russell 2000 holdings"
+
+The server will automatically handle the API calls and return formatted, readable results.
 
 ## Configuration
 
@@ -217,12 +256,51 @@ This server maintains compatibility with existing stocktrading codebase by:
 
 MIT License - see LICENSE file for details.
 
+## Troubleshooting
+
+### Red Icon in Cursor (Server Not Working)
+
+If you see a red icon next to the EODHD MCP server in Cursor:
+
+1. **Check Configuration Path**: Ensure the `command` path points to the correct location:
+   ```bash
+   # Find the correct path
+   source venv/bin/activate
+   which eodhd-mcp-server
+   ```
+
+2. **Verify Environment Variables**: Make sure your `.env` file exists and contains:
+   ```
+   EODHD_API_KEY=your_actual_api_key
+   ```
+
+3. **Test Server Manually**: Try running the server directly:
+   ```bash
+   source venv/bin/activate
+   eodhd-mcp-server
+   ```
+
+4. **Check Cursor Configuration**: Ensure your `~/.cursor/mcp.json` includes:
+   - Absolute path to the executable
+   - Correct working directory (`cwd`)
+   - Environment variables or `.env` file access
+
+5. **Restart Cursor**: After configuration changes, completely restart Cursor.
+
+### Common Issues
+
+- **API Key Issues**: Verify your EODHD API key is valid and has sufficient quota
+- **Path Issues**: Use absolute paths in Cursor configuration
+- **Permission Issues**: Ensure the executable has proper permissions
+- **Virtual Environment**: Make sure you're using the correct virtual environment path
+
 ## Support
 
 For issues and questions:
 1. Check the [EODHD API documentation](https://eodhd.com/financial-api/)
 2. Review error messages in debug mode (`DEBUG=true`)
-3. Open an issue in the repository
+3. Use the troubleshooting guide above
+4. Open an issue in the repository
 
 ## Changelog
 

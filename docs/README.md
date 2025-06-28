@@ -8,7 +8,6 @@
 |---------|------|------|
 | [EODHD_MCP_Server_Design.md](./EODHD_MCP_Server_Design.md) | システム設計書 | 日本語 |
 | [EODHD_MCP_Server_Design_EN.md](./EODHD_MCP_Server_Design_EN.md) | System Design Document | English |
-| [CLAUDE.md](./CLAUDE.md) | Development Guidelines for Claude Code | English |
 
 ## 🏗️ Design Documents
 
@@ -25,19 +24,13 @@
 - テスト戦略
 - デプロイメント手順
 
-### 開発ガイドライン (Development Guidelines)
-- **Claude Code向け**: `CLAUDE.md`
-  - プロジェクト概要
-  - 開発環境セットアップ
-  - アーキテクチャ説明
-  - 設定管理
-  - テスト手順
+
 
 ## 🔧 For Developers
 
 開発を始める前に以下のドキュメントを確認してください：
 
-1. **[CLAUDE.md](./CLAUDE.md)** - 開発環境のセットアップと基本的な開発ワークフロー
+1. **[../CLAUDE.md](../CLAUDE.md)** - 開発環境のセットアップと基本的な開発ワークフロー
 2. **[設計書](./EODHD_MCP_Server_Design.md)** - システムの詳細設計と実装仕様
 
 ## 📋 Document Updates

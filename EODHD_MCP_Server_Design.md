@@ -5,7 +5,6 @@
 ### 1.1 目的
 - EODHDの各種APIエンドポイントにアクセスするためのMCPサーバーを構築
 - 株価データ、決算情報、ファンダメンタルデータの統一されたインターフェースを提供
-- 既存のstocktradingプロジェクトとの互換性を保持
 
 ### 1.2 技術スタック
 - **言語**: Python 3.8+
@@ -401,19 +400,3 @@ result = mcp_client.call_tool("stock_price", {
 })
 ```
 
-## 10. 既存コードベースとの関連
-
-### 10.1 対応するAPIエンドポイント
-| MCPツール | EODHDエンドポイント | 既存ファイルでの使用箇所 |
-|-----------|-------------------|----------------------|
-| stock_price | `/api/eod/{symbol}.US` | market_breadth.py, earnings_converter_eodhd.py, earnings_screener.py |
-| earnings_calendar | `/api/calendar/earnings` | earnings_screener.py |
-| fundamentals | `/api/fundamentals/{symbol}.US` | earnings_screener.py |
-| index_components | `/api/fundamentals/{index}.INDX` | earnings_screener.py |
-
-### 10.2 データ形式の互換性
-- 既存コードで使用されているDataFrame形式を維持
-- APIレスポンスの構造を保持
-- 同じ列名とデータ型を使用
-
-この設計に基づいて、既存のstocktradingコードベースとの互換性を保ちながら、MCPプロトコルを通じてEODHD APIにアクセスできるサーバーを構築できます。

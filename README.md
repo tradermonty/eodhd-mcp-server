@@ -269,6 +269,12 @@ This server maintains compatibility with existing stocktrading codebase by:
 - Supporting the same API response formats
 - Following established error handling patterns
 
+## Support the Project
+
+If you find this project helpful, consider supporting its development:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support_Development-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://coff.ee/tradermonty)
+
 ## License
 
 MIT License - see LICENSE file for details.

@@ -282,6 +282,12 @@ pytest tests/
 - 同じAPIレスポンス形式のサポート
 - 確立されたエラーハンドリングパターンの踏襲
 
+## プロジェクトを支援する
+
+このプロジェクトがお役に立った場合、開発継続のためにサポートをご検討ください。
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support_Development-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://coff.ee/tradermonty)
+
 ## ライセンス
 
 MIT License - 詳細はLICENSEファイルを参照してください。

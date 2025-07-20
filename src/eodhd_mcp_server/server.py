@@ -374,6 +374,71 @@ async def get_volume_averages(
         return f"Unexpected Error: {e}"
 
 
+@mcp.tool()
+async def get_earnings_trend(
+    symbol: str,
+    years: int = 2,
+    exchange: str = "US"
+) -> str:
+    """
+    Retrieve earnings results for the past `years` and evaluate EPS / revenue trends.
+
+    Args:
+        symbol: 株式ティッカーシンボル
+        years: 取得する過去年数（デフォルト 2）
+        exchange: 取引所コード（デフォルト 'US'）
+
+    Returns:
+        フォーマット済み文字列（決算表 + EPS/Revenue のトレンド評価）
+    """
+    try:
+        if not symbol or not symbol.strip():
+            return "Error: Symbol is required"
+        if years <= 0:
+            return "Error: years must be positive"
+
+        symbol = symbol.strip().upper()
+
+        to_date = datetime.now().strftime('%Y-%m-%d')
+        from_date = (datetime.now() - timedelta(days=365 * years)).strftime('%Y-%m-%d')
+
+        logger.info(f"Fetching earnings for {symbol} from {from_date} to {to_date}")
+
+        async with EODHDClient() as client:
+            raw_data = await client.get_earnings_calendar(from_date, to_date, symbol)
+            if not raw_data:
+                return f"No earnings data found for {symbol} in the last {years} years"
+
+            df = DataProcessor.process_earnings_data(raw_data)
+            trends = DataProcessor.analyze_earnings_trend(df)
+
+            # Build display
+            display = [f"Earnings Results for {symbol} (last {years} years):", "=" * 50]
+            # show recent n rows
+            display.append(df[['report_date', 'actual', 'estimate']].tail(8).to_string(index=False))
+            display.append("")
+            if trends:
+                display.append("Trend Analysis:")
+                if 'eps_trend' in trends:
+                    display.append(f"EPS trend: {trends['eps_trend']}")
+                if 'revenue_trend' in trends:
+                    display.append(f"Revenue trend: {trends['revenue_trend']}")
+            else:
+                display.append("Trend Analysis: N/A")
+
+            return "\n".join(display)
+
+    except APIError as e:
+        logger.error(f"API error in get_earnings_trend: {e}")
+        return f"API Error: {e}"
+    except DataProcessingError as e:
+        logger.error(f"Data processing error in get_earnings_trend: {e}")
+        return f"Data Processing Error: {e}"
+    except Exception as e:
+        logger.error(f"Unexpected error in get_earnings_trend: {e}")
+        return f"Unexpected Error: {e}"
+
+
 def main():
     """Main entry point for the EODHD MCP Server."""
     try:

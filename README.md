@@ -66,6 +66,19 @@ get_volume_averages(symbol="AAPL")
 get_volume_averages(symbol="TSLA", periods="10,30,90")
 ```
 
+### 7. `get_earnings_trend`
+Fetch earnings results for the past *n* years (default 2) and analyze whether EPS and revenue show an increasing, decreasing, or mixed trend.
+
+**Parameters:**
+- `symbol` (required): Stock symbol
+- `years` (optional): Number of years to look back (default: 2)
+- `exchange` (optional): Exchange code (default: 'US')
+
+**Example:**
+```bash
+get_earnings_trend(symbol="AAPL", years=2)
+```
+
 ## Installation
 
 ### Prerequisites

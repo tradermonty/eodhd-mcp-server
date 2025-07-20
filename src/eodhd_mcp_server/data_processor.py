@@ -359,3 +359,52 @@ class DataProcessor:
             else:
                 averages[p] = None
         return averages
+
+    @staticmethod
+    def _determine_trend(series: pd.Series) -> str:
+        """Return 'increasing', 'decreasing', 'mixed', or 'N/A' for given numeric series."""
+        if series.isna().all():
+            return 'N/A'
+        diffs = series.diff().dropna()
+        if diffs.empty:
+            return 'N/A'
+        if (diffs > 0).all():
+            return 'increasing'
+        if (diffs < 0).all():
+            return 'decreasing'
+        return 'mixed'
+
+    @staticmethod
+    def analyze_earnings_trend(df: pd.DataFrame) -> Dict[str, str]:
+        """
+        Analyse EPS and revenue trend in earnings DataFrame.
+
+        The function expects columns like 'actual' (EPS actual) and either
+        'revenue' or 'revenue_actual'. It determines whether each metric is
+        increasing, decreasing or mixed over time.
+        """
+        if df.empty:
+            return {}
+
+        # Ensure sorted by date ascending
+        if 'report_date' in df.columns:
+            df = df.sort_values('report_date')
+        elif 'date' in df.columns:
+            df = df.sort_values('date')
+
+        result: Dict[str, str] = {}
+        if 'actual' in df.columns:
+            result['eps_trend'] = DataProcessor._determine_trend(pd.to_numeric(df['actual'], errors='coerce'))
+        elif 'eps' in df.columns:
+            result['eps_trend'] = DataProcessor._determine_trend(pd.to_numeric(df['eps'], errors='coerce'))
+
+        # revenue column variations
+        rev_col = None
+        for cand in ['revenue', 'revenue_actual', 'revenueActual']:
+            if cand in df.columns:
+                rev_col = cand
+                break
+        if rev_col:
+            result['revenue_trend'] = DataProcessor._determine_trend(pd.to_numeric(df[rev_col], errors='coerce'))
+
+        return result

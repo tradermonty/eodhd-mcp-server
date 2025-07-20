@@ -66,6 +66,19 @@ get_volume_averages(symbol="AAPL")
 get_volume_averages(symbol="TSLA", periods="10,30,90")
 ```
 
+### 7. `get_earnings_trend`
+過去 *n* 年間（デフォルト2年）の決算結果を取得し、EPS と売上が増加傾向かどうかを判定します。
+
+**パラメータ:**
+- `symbol` (必須): 株式シンボル
+- `years` (オプション): 遡る年数（デフォルト: 2）
+- `exchange` (オプション): 取引所コード（デフォルト: 'US'）
+
+**例:**
+```bash
+get_earnings_trend(symbol="AAPL", years=2)
+```
+
 ## インストール
 
 ### 前提条件

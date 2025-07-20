@@ -329,3 +329,33 @@ class DataProcessor:
         except Exception as e:
             logger.error(f"Failed to format data for display: {e}")
             return f"Error formatting {data_type} data: {e}"
+
+    @staticmethod
+    def calculate_average_volume(df: pd.DataFrame, periods: Optional[List[int]] = None) -> Dict[int, Optional[float]]:
+        """
+        Calculate average trading volume for specified periods.
+
+        Args:
+            df: DataFrame containing at least a 'volume' column, sorted by date ascending.
+            periods: List of periods (in trading days) to calculate averages for. Defaults to [20, 60].
+
+        Returns:
+            Dictionary mapping period -> average volume (or None if insufficient data).
+        """
+        if periods is None:
+            periods = [20, 60]
+
+        if df.empty or 'volume' not in df.columns:
+            return {p: None for p in periods}
+
+        # Ensure df sorted by date ascending
+        if 'date' in df.columns:
+            df = df.sort_values('date')
+
+        averages: Dict[int, Optional[float]] = {}
+        for p in periods:
+            if len(df) >= p:
+                averages[p] = df['volume'].tail(p).mean()
+            else:
+                averages[p] = None
+        return averages

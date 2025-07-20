@@ -287,6 +287,93 @@ async def get_growth_rates(
         return f"Unexpected Error: {e}"
 
 
+@mcp.tool()
+async def get_volume_averages(
+    symbol: str,
+    periods: str = "20,60",
+    exchange: str = "US"
+) -> str:
+    """
+    Calculate average trading volume for specified periods (e.g., 20日と60日) andその比率を返す。
+
+    Args:
+        symbol: 株式ティッカーシンボル
+        periods: コンマ区切りで指定する期間（日数）。デフォルトは "20,60"。
+        exchange: 取引所コード（デフォルト: 'US'）
+
+    Returns:
+        各期間の平均出来高と直近20日/過去60日の出来高比率を含むフォーマット済み文字列
+    """
+    try:
+        if not symbol or not symbol.strip():
+            return "Error: Symbol is required"
+
+        symbol = symbol.strip().upper()
+
+        # Parse and validate periods list (only positive unique integers)
+        period_list = []
+        for p_str in periods.split(','):
+            p_str = p_str.strip()
+            if not p_str:
+                continue
+            if not p_str.isdigit():
+                return "Error: Invalid periods format. Use comma-separated positive integers (e.g., '20,60')"
+            p_int = int(p_str)
+            if p_int <= 0:
+                return "Error: Periods must be positive integers (>0)"
+            period_list.append(p_int)
+
+        # Remove duplicates and preserve order
+        period_list = list(dict.fromkeys(period_list))
+
+        if not period_list:
+            return "Error: No valid positive periods provided"
+
+        max_period = max(period_list)
+
+        # データ取得期間を設定（余裕をもって +20日）
+        to_date = datetime.now().strftime('%Y-%m-%d')
+        from_date = (datetime.now() - timedelta(days=max_period + 40)).strftime('%Y-%m-%d')
+
+        logger.info(
+            f"Fetching EOD data for {symbol} from {from_date} to {to_date} for volume average calc"
+        )
+
+        async with EODHDClient() as client:
+            raw_data = await client.get_eod_data(symbol, from_date, to_date, exchange)
+            if not raw_data:
+                return f"No stock price data found for {symbol}"
+
+            df = DataProcessor.process_eod_data(raw_data)
+            averages = DataProcessor.calculate_average_volume(df, period_list)
+
+            # フォーマット
+            lines = [f"Average Volume for {symbol}:", "=" * 30]
+            for p in sorted(averages.keys()):
+                avg_val = averages[p]
+                if avg_val is not None:
+                    lines.append(f"{p}-day Avg Volume: {avg_val:,.0f}")
+                else:
+                    lines.append(f"{p}-day Avg Volume: N/A (insufficient data)")
+
+            # 20日と60日が揃っていれば比率を表示
+            if 20 in averages and 60 in averages and averages[20] and averages[60]:
+                ratio = averages[20] / averages[60] if averages[60] else None
+                if ratio is not None:
+                    lines.append(f"20/60-day Volume Ratio: {ratio:.2f}")
+            return "\n".join(lines)
+
+    except APIError as e:
+        logger.error(f"API error in get_volume_averages: {e}")
+        return f"API Error: {e}"
+    except DataProcessingError as e:
+        logger.error(f"Data processing error in get_volume_averages: {e}")
+        return f"Data Processing Error: {e}"
+    except Exception as e:
+        logger.error(f"Unexpected error in get_volume_averages: {e}")
+        return f"Unexpected Error: {e}"
+
+
 def main():
     """Main entry point for the EODHD MCP Server."""
     try:

@@ -11,6 +11,7 @@ A Model Context Protocol (MCP) server that provides access to EODHD financial AP
 - **Fundamental Data**: Retrieve comprehensive company financial metrics
 - **Index Components**: Get constituent information for market indices
 - **Growth Metrics**: Extract and analyze growth rate data
+- **Volume Analysis**: Retrieve average trading volume for specified periods and volume ratios
 
 ## Available Tools
 
@@ -50,6 +51,20 @@ Extract growth rate metrics from fundamental data.
 **Parameters:**
 - `symbol` (required): Stock symbol
 - `exchange` (optional): Exchange code (default: 'US')
+
+### 6. `get_volume_averages`
+Calculate average trading volume for given periods (default 20 & 60 days) and return the 20/60-day volume ratio.
+
+**Parameters:**
+- `symbol` (required): Stock symbol
+- `periods` (optional): Comma-separated list of periods (e.g., "10,20,60")
+- `exchange` (optional): Exchange code (default: 'US')
+
+**Examples:**
+```bash
+get_volume_averages(symbol="AAPL")
+get_volume_averages(symbol="TSLA", periods="10,30,90")
+```
 
 ## Installation
 
